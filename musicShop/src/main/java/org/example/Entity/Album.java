@@ -1,4 +1,4 @@
-package org.example.entity;
+package org.example.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ public class Album {
 
     @ManyToOne
     @JoinColumn(name = "id_of_label", nullable = false)
-    public Label label;
+    public LabelMS label;
 
     @Column(nullable = false)
     public Integer cost;

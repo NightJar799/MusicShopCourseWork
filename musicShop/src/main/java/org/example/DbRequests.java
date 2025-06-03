@@ -1,12 +1,10 @@
 package org.example;
 
+import org.example.Entity.*;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import static org.hibernate.cfg.AvailableSettings.*;
-
-import org.example.entity.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,14 +13,14 @@ public class DbRequests {
 
     public void getLabels(SessionFactory factory){
         Session session = factory.openSession();
-        session.createNativeQuery("SELECT * FROM shop.labels", Label.class)
+        session.createNativeQuery("SELECT * FROM shop.labels", LabelMS.class)
                 .getResultList().forEach(System.out::println);
         session.close();
     }
 
     public void getAllLabels(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.labels", Label.class)
+            session.createNativeQuery("SELECT * FROM shop.labels", LabelMS.class)
                     .getResultList()
                     .forEach(System.out::println);
         }

@@ -1,10 +1,10 @@
-package org.example.entity;
+package org.example.Entity;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "labels", schema = "shop")
-public class Label {
+public class LabelMS {
     @Id
     @Column(insertable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator ="labelIdSequence")
