@@ -8,10 +8,12 @@ import static org.hibernate.cfg.AvailableSettings.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 import org.example.Entity.*;
+import org.example.Design.*;
 
 public class Main extends Application{
     public static void main(String[] args) {
@@ -20,22 +22,40 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage){
-        Label label1 = new Label("Label1");
-        Label label2 = new Label("Label2");
-        Label label3 = new Label("Label3");
-        Label label4 = new Label("Label4");
-        Label label5 = new Label("Label5");
-        Label label6 = new Label("Label6");
-        Label label7 = new Label("Label7");
+//        Label label1 = new Label("Label1");
+//        Label label2 = new Label("Label2");
+//        Label label3 = new Label("Label3");
+//        Label label4 = new Label("Label4");
+//        Label label5 = new Label("Label5");
+//        Label label6 = new Label("Label6");
+//        Label label7 = new Label("Label7");
+//
+//        VBox root = new VBox(10, label1, label2, label3, label4, label5, label6, label7);
 
-        VBox root = new VBox(10, label1, label2, label3, label4, label5, label6, label7);
-        Scene scene = new Scene(root, 300, 150);
+        BorderPane root = new BorderPane();
+
+        SideField sidefield = new SideField("param","param1");
+        root.setLeft(sidefield);
+
+        MainField mainField = new MainField();
+        root.setCenter(mainField);
+
+        sidefield.setListOfQueries(mainField);
+
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
 
-        stage.setTitle("VBox in JavaFX");
-
         stage.show();
-    }
+        }
+
+//        SideField root = new SideField("query","query1","query2");
+//        Scene scene = new Scene(root, 300, 150);
+//        stage.setScene(scene);
+//
+//        stage.setTitle("VBox in JavaFX");
+//
+//        stage.show();
+//    }
 //        var factory = new Configuration()
 //                .addAnnotatedClass(LabelMS.class)
 //                .addAnnotatedClass(Album.class)
