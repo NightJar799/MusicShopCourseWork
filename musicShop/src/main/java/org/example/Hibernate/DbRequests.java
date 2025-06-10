@@ -1,34 +1,38 @@
-package org.example;
+package org.example.Hibernate;
 
 import org.example.Entity.*;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import org.example.Hibernate.HibernateUtil;
+
 public class DbRequests {
 
-    public void getLabels(SessionFactory factory){
-        Session session = factory.openSession();
-        session.createNativeQuery("SELECT * FROM shop.labels", LabelMS.class)
-                .getResultList().forEach(System.out::println);
-        session.close();
+    public static String executeQuery(int numberOfQuery){
+        switch(numberOfQuery) {
+            case(0):
+                return getAllLabels(HibernateUtil.getSessionFactory());
+            default:
+                return "Unknown query";
+        }
     }
 
-    public void getAllLabels(SessionFactory factory) {
+    private static String getAllLabels(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.labels", LabelMS.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<?> out = session.createNativeQuery("SELECT * FROM shop.labels", Label.class).getResultList();
+            return out.toString();
         }
     }
 
     public void getAllAlbums(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.albums", Album.class)
+            session.createQuery("FROM Albums", Album.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -37,7 +41,7 @@ public class DbRequests {
 
     public void getAllGroups(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.groups", Group.class)
+            session.createQuery("FROM Group", Group.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -45,7 +49,7 @@ public class DbRequests {
 
     public void getAllCompositions(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.compositions", Composition.class)
+            session.createQuery("FROM Composition", Composition.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -53,7 +57,7 @@ public class DbRequests {
 
     public void getAllInstruments(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.instruments", Instrument.class)
+            session.createQuery("FROM Instrument", Instrument.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -61,7 +65,7 @@ public class DbRequests {
 
     public void getAllPersonalities(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.personalities", Personality.class)
+            session.createQuery("FROM Personality", Personality.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -69,7 +73,7 @@ public class DbRequests {
 
     public void getAllParticipations(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createNativeQuery("SELECT * FROM shop.participations", Participation.class)
+            session.createQuery("FROM Participation", Participation.class)
                     .getResultList()
                     .forEach(System.out::println);
         }
@@ -77,7 +81,7 @@ public class DbRequests {
 
     public void getRockAlbumsWithGuitar(SessionFactory factory,String genre,String instrument) {
         try (Session session = factory.openSession()) {
-            String query = " SELECT DISTINCT a.* FROM shop.albums a JOIN shop.labels l ON a.id_of_label = l.id JOIN shop.compositions c ON a.ean = c.ean_of_album " +
+            String query = "SELECT DISTINCT a.* FROM shop.albums a JOIN shop.labels l ON a.id_of_label = l.id JOIN shop.compositions c ON a.ean = c.ean_of_album " +
                     "JOIN shop.groups g ON c.id_of_group = g.id JOIN shop.participations p ON g.id = p.id_of_group " +
                     "JOIN shop.instruments i ON p.id_of_instrument = i.id WHERE c.genre = :genre AND i.name = + :instrument" +
                     " ORDER BY a.name ";

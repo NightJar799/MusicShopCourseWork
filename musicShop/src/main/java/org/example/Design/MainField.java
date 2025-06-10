@@ -4,6 +4,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.Node;
 
+import org.example.Hibernate.DbRequests;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +30,13 @@ public class MainField extends VBox{
     public void loadFieldsForQuery(Integer numberOfQuery){
         inputFields.getChildren().clear();
         switch (numberOfQuery) {
-            case 1:
+            case 0:
                 addInputField("parameter: 1","param1");
                 addInputField("parameter 2","param2");
                 break;
         }
         Button executeBtn = new Button("Execute");
+        executeBtn.setOnAction(e -> executeQuery(numberOfQuery));
 
         inputFields.add(executeBtn, 0, inputFields.getChildren().size() / 2);
     }
@@ -47,6 +50,12 @@ public class MainField extends VBox{
         textField.setId(fieldId);
         inputFields.add(label, 0, row);
         inputFields.add(textField, 1, row);
+    }
+
+    private void executeQuery(int queryNumber) {
+        // Здесь логика выполнения запроса через Hibernate
+        String result = DbRequests.executeQuery(queryNumber);
+        resultArea.setText(result);
     }
 
     private Map<String, String> collectInputData() {

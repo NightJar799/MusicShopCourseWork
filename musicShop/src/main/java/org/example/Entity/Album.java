@@ -12,7 +12,7 @@ public class Album {
 
     @ManyToOne
     @JoinColumn(name = "id_of_label", nullable = false)
-    public LabelMS label;
+    public Label label;
 
     @Column(nullable = false)
     public Integer cost;

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(insertable = false)
+    @Column(name = "id", insertable = false)
     public Integer id;
 
     @Column(name = "country_of_group", nullable = false)
@@ -16,10 +16,10 @@ public class Group {
     @Column(name = "year_of_founding")
     public Integer yearOfFunding;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     public String name;
 
-    @Column(nullable = false)
+    @Column(name = "language", nullable = false)
     public String language;
 
     @Override

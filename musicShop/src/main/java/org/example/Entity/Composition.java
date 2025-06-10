@@ -8,24 +8,24 @@ import java.time.Duration;
 public class Composition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(insertable = false)
+    @Column(name = "id", insertable = false)
     public Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ean_of_album", nullable = false)
     public Album album;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_of_group", nullable = false)
     public Group group;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     public String name;
 
-    @Column(nullable = false)
+    @Column(name = "duration", nullable = false)
     public Duration duration;
 
-    @Column(nullable = false)
+    @Column(name = "genre", nullable = false)
     public String genre;
 
     @Column(name = "number_of_comp", nullable = false)
