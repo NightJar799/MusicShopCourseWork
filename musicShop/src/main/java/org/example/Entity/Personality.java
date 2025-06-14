@@ -48,4 +48,56 @@ public class Personality {
                 ", frontman=" + frontman +
                 '}';
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public String getThirdName() {
+        return thirdName;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public Boolean getFrontman() {
+        return frontman;
+    }
+
+    public Personality(Long id, String language, String country, String firstname, String secondName, String thirdName, LocalDate dateOfBirth, String nickname, Boolean frontman) {
+        this.id = id;
+        this.language = language;
+        this.country = country;
+        this.firstname = firstname;
+        this.secondName = secondName;
+        this.thirdName = thirdName;
+        this.dateOfBirth = dateOfBirth;
+        this.nickname = nickname;
+        this.frontman = frontman;
+    }
+
+    public Personality() {
+
+    }
 }

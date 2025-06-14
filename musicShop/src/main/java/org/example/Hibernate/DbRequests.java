@@ -9,15 +9,48 @@ import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.example.Hibernate.HibernateUtil;
 
 public class DbRequests {
 
-    public static QueryResult executeQuery(int numberOfQuery){
-        switch(numberOfQuery) {
-            case(0):
+    public static QueryResult executeQuery(int numberOfQuery, Map<String, String> inputs) {
+        switch (numberOfQuery) {
+            case (0):
                 return getAllLabels(HibernateUtil.getSessionFactory());
+            case (1):
+                return getAllAlbums(HibernateUtil.getSessionFactory());
+            case (2):
+                return getAllGroups(HibernateUtil.getSessionFactory());
+            case (3):
+                return getAllCompositions(HibernateUtil.getSessionFactory());
+            case (4):
+                return getAllInstruments(HibernateUtil.getSessionFactory());
+            case (5):
+                return getAllPersonalities(HibernateUtil.getSessionFactory());
+            case (6):
+                return getAllParticipations(HibernateUtil.getSessionFactory());
+            case (7):
+                return getMinAlbumCostForLabelWithFrontman(HibernateUtil.getSessionFactory(), inputs);
+            case (8):
+                return getAvgAlbumCostForGenreWithInstrument(HibernateUtil.getSessionFactory(), inputs);
+            case (9):
+                return getCompositionsWithInstrumentsFromLabel(HibernateUtil.getSessionFactory(), inputs);
+            case (10):
+                return getAlbumsByGroupAndLabel(HibernateUtil.getSessionFactory(), inputs);
+            case (11):
+                return updateAlbumLabel(HibernateUtil.getSessionFactory(), inputs);
+            case (12):
+                return updateParticipation(HibernateUtil.getSessionFactory(), inputs);
+            case (13):
+                return deleteAlbumsWithCompositionsByPersonality(HibernateUtil.getSessionFactory(), inputs);
+            case (14):
+                return deleteAlbumsWithLabel(HibernateUtil.getSessionFactory(), inputs);
+//            case (15):
+//                return insertNewAlbumWithCompositions(HibernateUtil.getSessionFactory(),inputs);
+//            case (16):
+//                return insertNewPersonalityAndParticipation(HibernateUtil.getSessionFactory(),inputs);
             default:
                 return new QueryResult(true, Collections.emptyList());
         }
@@ -48,314 +81,506 @@ public class DbRequests {
         }
     }
 
-    public void getAllAlbums(SessionFactory factory) {
+    public static QueryResult getAllAlbums(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Albums", Album.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Album> albums = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Album album : albums) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-
-    public void getAllGroups(SessionFactory factory) {
+    public static QueryResult getAllGroups(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Group", Group.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Group> groups = session.createNativeQuery("SELECT * FROM shop.groups", Group.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Group group : groups) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id", group.getId());
+                row.put("country_of_group", group.getCountry());
+                row.put("year_of_founding", group.getYearOfFunding());
+                row.put("name", group.getName());
+                row.put("language", group.getLanguage());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void getAllCompositions(SessionFactory factory) {
+    public static QueryResult getAllCompositions(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Composition", Composition.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Composition> compositions = session.createNativeQuery("SELECT * FROM shop.compositions", Composition.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Composition composition : compositions) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id", composition.getId());
+                row.put("ean_of_album", composition.getAlbum());
+                row.put("id_of_group", composition.getGroup());
+                row.put("name", composition.getName());
+                row.put("duration", composition.getDuration());
+                row.put("genre", composition.getGenre());
+                row.put("number_of_comp", composition.getNumberOfComp());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void getAllInstruments(SessionFactory factory) {
+    public static QueryResult getAllInstruments(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Instrument", Instrument.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Instrument> instruments = session.createNativeQuery("SELECT * FROM shop.instruments", Instrument.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Instrument instrument : instruments) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id", instrument.getId());
+                row.put("type_of_instrument", instrument.getType());
+                row.put("name", instrument.getName());
+                row.put("name_of_model", instrument.getModelName());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void getAllPersonalities(SessionFactory factory) {
+    public static QueryResult getAllPersonalities(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Personality", Personality.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Personality> personalities = session.createNativeQuery("SELECT * FROM shop.personalities", Personality.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Personality personality : personalities) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id", personality.getId());
+                row.put("language", personality.getLanguage());
+                row.put("country", personality.getCountry());
+                row.put("firstname", personality.getFirstname());
+                row.put("secondname", personality.getSecondName());
+                row.put("thirdname", personality.getThirdName());
+                row.put("date_of_birth", personality.getDateOfBirth());
+                row.put("nickname", personality.getNickname());
+                row.put("frontman", personality.getFrontman());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void getAllParticipations(SessionFactory factory) {
+    public static QueryResult getAllParticipations(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            session.createQuery("FROM Participation", Participation.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Participation> participations = session.createNativeQuery("SELECT * FROM shop.participations", Participation.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Participation participation : participations) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id_of_group", participation.getGroup());
+                row.put("id_of_personality", participation.getPersonality());
+                row.put("id_of_instrument", participation.getInstrument());
+                resultList.add(row);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void getRockAlbumsWithGuitar(SessionFactory factory,String genre,String instrument) {
+    // 1. Query to find minimum album cost for a specific label with a specific frontman
+    public static QueryResult getMinAlbumCostForLabelWithFrontman(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            String query = "SELECT DISTINCT a.* FROM shop.albums a JOIN shop.labels l ON a.id_of_label = l.id JOIN shop.compositions c ON a.ean = c.ean_of_album " +
-                    "JOIN shop.groups g ON c.id_of_group = g.id JOIN shop.participations p ON g.id = p.id_of_group " +
-                    "JOIN shop.instruments i ON p.id_of_instrument = i.id WHERE c.genre = :genre AND i.name = + :instrument" +
-                    " ORDER BY a.name ";
-
-            session.createNativeQuery(query, Album.class)
-                    .getResultList()
-                    .forEach(System.out::println);
-        }
-    }
-
-    public void getSonicAlbumsWithIronMike(SessionFactory factory, String labelShortName, String personNickname) {
-        try (Session session = factory.openSession()) {
-            String query = "SELECT DISTINCT a.* FROM shop.albums a JOIN shop.labels l ON a.id_of_label = l.id JOIN shop.compositions c ON a.ean = c.ean_of_album " +
-                    "JOIN shop.groups g ON c.id_of_group = g.id JOIN shop.participations p ON g.id = p.id_of_group " +
+            String query = "SELECT min(a.cost) FROM shop.albums a " +
+                    "JOIN shop.labels l ON a.id_of_label = l.id " +
+                    "JOIN shop.compositions c ON a.ean = c.ean_of_album " +
+                    "JOIN shop.groups g ON c.id_of_group = g.id " +
+                    "JOIN shop.participations p ON g.id = p.id_of_group " +
                     "JOIN shop.personalities pe ON p.id_of_personality = pe.id " +
-                    "WHERE l.short_name = :labelShortName AND pe.nickname = :personNickname AND pe.frontman = true GROUP BY a.ean ";
+                    "WHERE l.short_name = :labelShortName " +
+                    "AND pe.nickname = :nickname " +
+                    "AND pe.frontman = true";
 
-            session.createNativeQuery(query, Album.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            Double minCost = (Double) session.createNativeQuery(query)
+                    .setParameter("labelShortName", inputs.get("labelShortname"))
+                    .setParameter("nickname", inputs.get("personalityNickname"))
+                    .uniqueResult();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("min_cost", minCost);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void getSonicCompositionsWithGuitarLikeInstruments(SessionFactory factory, String labelShortName) {
+    // 2. Query to find average album cost for specific genre with specific instrument
+    public static QueryResult getAvgAlbumCostForGenreWithInstrument(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            String query = " SELECT DISTINCT c.* FROM shop.compositions c JOIN shop.albums a ON c.ean_of_album = a.ean " +
-                    "JOIN shop.labels l ON l.id = a.id_of_label JOIN shop.groups g ON g.id = c.id_of_group " +
-                    "JOIN shop.participations p ON g.id = p.id_of_group JOIN shop.instruments i ON p.id_of_instrument = i.id " +
-                    "WHERE i.name IN ('Violin', 'Bass', 'Guitar') AND l.short_name = :labelShortName ORDER BY c.name";
+            String query = "SELECT avg(a.cost) FROM shop.albums a " +
+                    "JOIN shop.labels l ON a.id_of_label = l.id " +
+                    "JOIN shop.compositions c ON a.ean = c.ean_of_album " +
+                    "JOIN shop.groups g ON c.id_of_group = g.id " +
+                    "JOIN shop.participations p ON g.id = p.id_of_group " +
+                    "JOIN shop.instruments i ON p.id_of_instrument = i.id " +
+                    "WHERE c.genre = :genre AND i.name = :instrumentName";
 
-            session.createNativeQuery(query, Composition.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            Double avgCost = (Double) session.createNativeQuery(query)
+                    .setParameter("genre", inputs.get("genre"))
+                    .setParameter("instrumentName", inputs.get("instrumentName"))
+                    .uniqueResult();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("avg_cost", avgCost);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void getKoliaAlbumsFromVinylLabel(SessionFactory factory, String groupName, String labelShortName) {
+    // 3. Query to find albums by specific group and label
+    public static QueryResult getAlbumsByGroupAndLabel(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            String query = "SELECT DISTINCT a.* FROM shop.albums a JOIN shop.compositions c ON a.ean = c.ean_of_album " +
-                    "JOIN shop.groups g ON g.id = c.id_of_group JOIN shop.labels l ON l.id = a.id_of_label " +
+            String query = "SELECT DISTINCT a.ean, a.id_of_label, a.cost, a.name " +
+                    "FROM shop.albums a " +
+                    "JOIN shop.compositions c ON a.ean = c.ean_of_album " +
+                    "JOIN shop.groups g ON g.id = c.id_of_group " +
+                    "JOIN shop.labels l ON l.id = a.id_of_label " +
                     "WHERE g.name = :groupName AND l.short_name = :labelShortName " +
-                    "AND EXISTS ( SELECT 1 FROM shop.compositions c JOIN shop.groups g ON g.id = c.id_of_group " +
-                    "WHERE c.ean_of_album = a.ean AND g.name = :groupName) ORDER BY a.name";
+                    "AND EXISTS (SELECT 1 FROM shop.compositions c " +
+                    "JOIN shop.groups g ON g.id = c.id_of_group " +
+                    "WHERE c.ean_of_album = a.ean AND g.name = :groupName)";
 
-            session.createNativeQuery(query, Album.class)
-                    .getResultList()
-                    .forEach(System.out::println);
+            List<Object[]> results = session.createNativeQuery(query)
+                    .setParameter("groupName", inputs.get("groupName"))
+                    .setParameter("labelShortName", inputs.get("labelShortName"))
+                    .getResultList();
+
+            List<Map<String, Object>> resultList = new ArrayList<>();
+            for (Object[] row : results) {
+                Map<String, Object> rowMap = new HashMap<>();
+                rowMap.put("ean", row[0]);
+                rowMap.put("id_of_label", row[1]);
+                rowMap.put("cost", row[2]);
+                rowMap.put("name", row[3]);
+                resultList.add(rowMap);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void countAlbumsWithSameSongsDifferentPackaging(SessionFactory factory) {
+    // 4. Query to find compositions with specific instruments from specific label
+    public static QueryResult getCompositionsWithInstrumentsFromLabel(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            String query = "WITH album_composition AS (SELECT a.ean, a.type_of_package, STRING_AGG(c.name, ',' ORDER BY c.name) AS songs_list " +
-                    "FROM shop.albums a JOIN shop.compositions c ON a.ean = c.ean_of_album GROUP BY a.ean, a.type_of_package) " +
-                    "SELECT COUNT(a1.ean) FROM album_composition a1 JOIN album_composition a2 ON a1.songs_list = a2.songs_list " +
-                    "AND a1.ean != a2.ean AND a1.type_of_package != a2.type_of_package ";
+            String query = "SELECT DISTINCT c.id, c.ean_of_album, c.id_of_group, c.name, c.genre " +
+                    "FROM shop.compositions c " +
+                    "JOIN shop.albums a ON c.ean_of_album = a.ean " +
+                    "JOIN shop.labels l ON l.id = a.id_of_label " +
+                    "JOIN shop.groups g ON g.id = c.id_of_group " +
+                    "JOIN shop.participations p ON g.id = p.id_of_group " +
+                    "JOIN shop.instruments i ON p.id_of_instrument = i.id " +
+                    "WHERE i.name IN (:instrumentNames) AND l.short_name = :labelShortName " +
+                    "ORDER BY c.name";
 
-            Object result = session.createNativeQuery(query).getSingleResult();
-            System.out.println("Количество альбомов: " + result);
+            List<Object[]> results = session.createNativeQuery(query)
+                    .setParameterList("instrumentNames", Collections.singleton(inputs.get("instrumentsNames")))
+                    .setParameter("labelShortName", inputs.get("labelShortName"))
+                    .getResultList();
+
+            List<Map<String, Object>> resultList = new ArrayList<>();
+            for (Object[] row : results) {
+                Map<String, Object> rowMap = new HashMap<>();
+                rowMap.put("id", row[0]);
+                rowMap.put("ean_of_album", row[1]);
+                rowMap.put("id_of_group", row[2]);
+                rowMap.put("name", row[3]);
+                rowMap.put("genre", row[4]);
+                resultList.add(rowMap);
+            }
+
+            return new QueryResult(true, resultList);
         }
     }
 
-    public void updateAlbumLabel(SessionFactory factory, Long ean, String labelShortName) {
+    // 6. Update label for specific album
+    public static QueryResult updateAlbumLabel(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllAlbums(factory);
-
-            String query = "UPDATE shop.albums SET id_of_label = (SELECT id FROM shop.labels " +
-                    "WHERE short_name = :labelShortName) WHERE ean = :ean";
-
-            getAllAlbums(factory);
+            String query = "UPDATE shop.albums " +
+                    "SET id_of_label = (SELECT id FROM shop.labels WHERE short_name = :labelShortName) " +
+                    "WHERE ean = :ean";
 
             int updated = session.createNativeQuery(query)
-                    .setParameter("ean", ean)
-                    .setParameter("labelShortName", labelShortName)
+                    .setParameter("labelShortName", inputs.get("labelShortName"))
+                    .setParameter("ean", inputs.get("ean"))
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Обновлено альбомов: " + updated);
+            session.getTransaction().commit();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("updated_rows", updated);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void updateGroupParticipant(SessionFactory factory, int groupId, int instrumentId, String nickname) {
+    // 7. Update participation to set personality for specific group and instrument
+    public static QueryResult updateParticipation(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllParticipations(factory);
-
-            String query = "UPDATE shop.participations SET id_of_personality = (SELECT id FROM shop.personalities WHERE nickname = :nickname) " +
+            String query = "UPDATE shop.participations " +
+                    "SET id_of_personality = (SELECT id FROM shop.personalities WHERE nickname = :nickname) " +
                     "WHERE id_of_group = :groupId AND id_of_instrument = :instrumentId";
 
-            getAllParticipations(factory);
-
             int updated = session.createNativeQuery(query)
-                    .setParameter("groupId", groupId)
-                    .setParameter("instrumentId", instrumentId)
-                    .setParameter("nickname", nickname)
+                    .setParameter("nickname", inputs.get("nickname"))
+                    .setParameter("groupId", inputs.get("groupId"))
+                    .setParameter("instrumentId", inputs.get("instrumentId"))
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Обновлено участников: " + updated);
+            session.getTransaction().commit();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("updated_rows", updated);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void deleteAlbumsByLabel(SessionFactory factory, String labelShortName) {
+    // 8. Delete albums with specific label
+    public static QueryResult deleteAlbumsWithLabel(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllAlbums(factory);
-
-            String query = "DELETE FROM shop.albums WHERE id_of_label = " +
-                    "(SELECT id FROM shop.labels WHERE short_name = :labelShortName)";
-
-            getAllAlbums(factory);
+            String query = "DELETE FROM shop.albums " +
+                    "WHERE id_of_label = (SELECT id FROM shop.labels WHERE short_name = :labelShortName)";
 
             int deleted = session.createNativeQuery(query)
-                    .setParameter("labelShortName", labelShortName)
+                    .setParameter("labelShortName", inputs.get("labelShortName"))
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Удалено альбомов: " + deleted);
+            session.getTransaction().commit();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("deleted_rows", deleted);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void deleteAlbumsByParticipant(SessionFactory factory, String nickname) {
+    // 9. Delete albums with compositions by specific personality
+    public static QueryResult deleteAlbumsWithCompositionsByPersonality(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllAlbums(factory);
-
-            String query = "DELETE FROM shop.albums WHERE ean IN (SELECT DISTINCT c.ean_of_album FROM shop.compositions c " +
-                    "JOIN shop.groups g ON c.id_of_group = g.id JOIN shop.participations p ON g.id = p.id_of_group " +
-                    "JOIN shop.personalities pe ON p.id_of_personality = pe.id WHERE pe.nickname = :nickname)";
-
-            getAllAlbums(factory);
+            String query = "DELETE FROM shop.albums " +
+                    "WHERE ean IN (SELECT DISTINCT c.ean_of_album " +
+                    "FROM shop.compositions c " +
+                    "JOIN shop.groups g ON c.id_of_group = g.id " +
+                    "JOIN shop.participations p ON g.id = p.id_of_group " +
+                    "JOIN shop.personalities pe ON p.id_of_personality = pe.id " +
+                    "WHERE pe.nickname = :nickname)";
 
             int deleted = session.createNativeQuery(query)
-                    .setParameter("nickname", nickname)
+                    .setParameter("nickname", inputs.get("nickname"))
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Удалено альбомов: " + deleted);
+            session.getTransaction().commit();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("deleted_rows", deleted);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void insertNewAlbum(SessionFactory factory, Long ean, String labelShortName,
-                               Integer cost, String typeOfPackage, String typeOfPublication, String name) {
+    // 10. Insert new album with compositions
+    public static QueryResult insertNewAlbumWithCompositions(SessionFactory factory,
+                                                             long ean, String labelShortName, int cost, String packageType,
+                                                             String publicationType, String albumName, List<CompositionDTO> compositions) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllAlbums(factory);
+            // Insert album
+            String albumQuery = "INSERT INTO shop.albums (ean, id_of_label, cost, date_of_relise, " +
+                    "type_of_package, type_of_publication, name) " +
+                    "VALUES (:ean, " +
+                    "(SELECT id FROM shop.labels WHERE short_name = :labelShortName), " +
+                    ":cost, CURRENT_DATE, :packageType, :publicationType, :albumName)";
 
-            String query = "INSERT INTO shop.albums (ean, id_of_label, cost, date_of_relise, type_of_package," +
-                    " type_of_publication, name) VALUES (:ean, (SELECT id FROM shop.labels WHERE short_name = " +
-                    ":labelShortName),:cost, CURRENT_DATE,:typeOfPackage,:typeOfPublication," +
-                    ":name)";
-
-            getAllAlbums(factory);
-
-            int inserted = session.createNativeQuery(query)
+            int albumsInserted = session.createNativeQuery(albumQuery)
                     .setParameter("ean", ean)
                     .setParameter("labelShortName", labelShortName)
                     .setParameter("cost", cost)
-                    .setParameter("typeOfPackage", typeOfPackage)
-                    .setParameter("typeOfPublication", typeOfPublication)
-                    .setParameter("name", name)
+                    .setParameter("packageType", packageType)
+                    .setParameter("publicationType", publicationType)
+                    .setParameter("albumName", albumName)
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Добавлено альбомов: " + inserted);
-        }
-    }
-
-    public void insertCompositions(SessionFactory factory, Long ean, String groupName,
-                                   List<CompositionDTO> compositions) {
-        try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
-
-            Integer groupId = (Integer) session.createNativeQuery("SELECT id FROM shop.groups WHERE name = :groupName")
-                    .setParameter("groupName", groupName)
-                    .getSingleResult();
-
-            getAllCompositions(factory);
-
+            // Insert compositions
+            int compositionsInserted = 0;
             for (CompositionDTO comp : compositions) {
-                String query = "INSERT INTO shop.compositions (ean_of_album, id_of_group, name, duration, genre, number_of_comp) " +
-                        "VALUES (:ean, :groupId, :name, :duration, :genre, :number)";
+                String compQuery = "INSERT INTO shop.compositions (ean_of_album, id_of_group, " +
+                        "name, duration, genre, number_of_comp) " +
+                        "VALUES (:ean, (SELECT id FROM shop.groups WHERE name = :groupName), " +
+                        ":name, :duration, :genre, :number)";
 
-                session.createNativeQuery(query)
+                compositionsInserted += session.createNativeQuery(compQuery)
                         .setParameter("ean", ean)
-                        .setParameter("groupId", groupId)
-                        .setParameter("name", comp.name())
-                        .setParameter("duration", comp.duration())
-                        .setParameter("genre", comp.genre())
-                        .setParameter("number", comp.number())
+                        .setParameter("groupName", comp.getGroupName())
+                        .setParameter("name", comp.getName())
+                        .setParameter("duration", comp.getDuration())
+                        .setParameter("genre", comp.getGenre())
+                        .setParameter("number", comp.getNumber())
                         .executeUpdate();
             }
 
-            getAllCompositions(factory);
+            session.getTransaction().commit();
 
-            tx.commit();
-            System.out.println("Добавлено композиций: " + compositions.size());
+            Map<String, Object> result = new HashMap<>();
+            result.put("albums_inserted", albumsInserted);
+            result.put("compositions_inserted", compositionsInserted);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
 
-    public void insertPersonality(SessionFactory factory, PersonalityDTO personality) {
+    // 12. Insert new personality and participation
+    public static QueryResult insertNewPersonalityAndParticipation(SessionFactory factory,
+                                                                   PersonalityDTO personality, int groupId, int instrumentId) {
         try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
+            session.beginTransaction();
 
-            getAllPersonalities(factory);
-            String query = "INSERT INTO shop.personalities (language, country, firstname, secondname, thirdname, date_of_birth, nickname, frontman) " +
-                    "VALUES (:lang, :country, :firstName, :secondName, :thirdName, :birthDate, :nickname, :frontman)";
+            // Insert personality
+            String personalityQuery = "INSERT INTO shop.personalities (language, country, firstname, " +
+                    "secondname, thirdname, date_of_birth, nickname, frontman) " +
+                    "VALUES (:language, :country, :firstname, " +
+                    ":secondname, :thirdname, :dateOfBirth, :nickname, :frontman)";
 
-            getAllPersonalities(factory);
-
-            int inserted = session.createNativeQuery(query)
-                    .setParameter("lang", personality.language())
-                    .setParameter("country", personality.country())
-                    .setParameter("firstName", personality.firstname())
-                    .setParameter("secondName", personality.secondname())
-                    .setParameter("thirdName", personality.thirdname())
-                    .setParameter("birthDate", personality.dateOfBirth())
-                    .setParameter("nickname", personality.nickname())
-                    .setParameter("frontman", personality.frontman())
+            int personalityInserted = session.createNativeQuery(personalityQuery)
+                    .setParameter("language", personality.getLanguage())
+                    .setParameter("country", personality.getCountry())
+                    .setParameter("firstname", personality.getFirstname())
+                    .setParameter("secondname", personality.getSecondname())
+                    .setParameter("thirdname", personality.getThirdname())
+                    .setParameter("dateOfBirth", personality.getDateOfBirth())
+                    .setParameter("nickname", personality.getNickname())
+                    .setParameter("frontman", personality.isFrontman())
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Добавлено личностей: " + inserted);
-        }
-    }
+            // Insert participation
+            String participationQuery = "INSERT INTO shop.participations (id_of_group, id_of_personality, id_of_instrument) " +
+                    "VALUES (:groupId, " +
+                    "(SELECT id FROM shop.personalities WHERE nickname = :nickname), " +
+                    ":instrumentId)";
 
-    public void insertParticipation(SessionFactory factory, int groupId, String nickname, int instrumentId) {
-        try (Session session = factory.openSession()) {
-            Transaction tx = session.beginTransaction();
-
-            getAllParticipations(factory);
-
-
-            String query = "INSERT INTO shop.participations (id_of_group, id_of_personality, id_of_instrument) VALUES " +
-                    "(:groupId, (SELECT id FROM shop.personalities WHERE nickname = :nickname),:instrumentId)";
-
-            getAllParticipations(factory);
-
-            int inserted = session.createNativeQuery(query)
+            int participationInserted = session.createNativeQuery(participationQuery)
                     .setParameter("groupId", groupId)
-                    .setParameter("nickname", nickname)
+                    .setParameter("nickname", personality.getNickname())
                     .setParameter("instrumentId", instrumentId)
                     .executeUpdate();
 
-            tx.commit();
-            System.out.println("Добавлено участий: " + inserted);
+            session.getTransaction().commit();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("personality_inserted", personalityInserted);
+            result.put("participation_inserted", participationInserted);
+
+            return new QueryResult(true, Collections.singletonList(result));
         }
     }
-}
 
-record CompositionDTO(String name, String duration, String genre, int number) {}
-record PersonalityDTO(String language, String country, String firstname, String secondname,
-                      String thirdname, LocalDate dateOfBirth, String nickname, boolean frontman) {}
+            // DTO classes for complex parameters
+            public static class CompositionDTO {
+                private String groupName;
+                private String name;
+                private String duration;
+                private String genre;
+                private int number;
+
+                public void setGroupName(String groupName) {
+                    this.groupName = groupName;
+                }
+
+                public String getGroupName() {
+                    return groupName;
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public String getDuration() {
+                    return duration;
+                }
+
+                public String getGenre() {
+                    return genre;
+                }
+
+                public int getNumber() {
+                    return number;
+                }
+
+                // constructor, getters and setters
+            }
+
+            public static class PersonalityDTO {
+                private String language;
+                private String country;
+                private String firstname;
+                private String secondname;
+                private String thirdname;
+                private Date dateOfBirth;
+                private String nickname;
+                private boolean frontman;
+
+                public String getLanguage() {
+                    return language;
+                }
+
+                public String getCountry() {
+                    return country;
+                }
+
+                public String getFirstname() {
+                    return firstname;
+                }
+
+                public String getSecondname() {
+                    return secondname;
+                }
+
+                public String getThirdname() {
+                    return thirdname;
+                }
+
+                public Date getDateOfBirth() {
+                    return dateOfBirth;
+                }
+
+                public String getNickname() {
+                    return nickname;
+                }
+
+                public boolean isFrontman() {
+                    return frontman;
+                }
+
+                // constructor, getters and setters
+    }
+
+}

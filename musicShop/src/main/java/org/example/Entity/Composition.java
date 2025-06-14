@@ -1,7 +1,9 @@
 package org.example.Entity;
 
 import jakarta.persistence.*;
-import java.time.Duration;
+import org.hibernate.annotations.Type;
+
+import java.time.*;
 
 @Entity
 @Table(name = "compositions", schema = "shop")
@@ -43,4 +45,47 @@ public class Composition {
                 ", numberOfComp=" + numberOfComp +
                 '}';
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public Short getNumberOfComp() {
+        return numberOfComp;
+    }
+
+    public Composition(Long id, Album album, Group group, String name, Duration duration, String genre, Short numberOfComp) {
+        this.id = id;
+        this.album = album;
+        this.group = group;
+        this.name = name;
+        this.duration = duration;
+        this.genre = genre;
+        this.numberOfComp = numberOfComp;
+    }
+
+    public Composition() {
+
+    }
 }
+

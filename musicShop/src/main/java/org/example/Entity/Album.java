@@ -41,4 +41,46 @@ public class Album {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    public Long getEan() {
+        return ean;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public LocalDate getDateOfRelease() {
+        return dateOfRelease;
+    }
+
+    public String getTypeOfPackage() {
+        return typeOfPackage;
+    }
+
+    public String getTypeOfPublication() {
+        return typeOfPublication;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Album(Long ean, Label label, Integer cost, LocalDate dateOfRelease, String typeOfPackage, String typeOfPublication, String name) {
+        this.ean = ean;
+        this.label = label;
+        this.cost = cost;
+        this.dateOfRelease = dateOfRelease;
+        this.typeOfPackage = typeOfPackage;
+        this.typeOfPublication = typeOfPublication;
+        this.name = name;
+    }
+
+    public Album() {
+
+    }
 }

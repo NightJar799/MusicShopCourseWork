@@ -32,4 +32,37 @@ public class Group {
                 ", language='" + language + '\'' +
                 '}';
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public Integer getYearOfFunding() {
+        return yearOfFunding;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public Group() {
+
+    }
+
+    public Group(Integer id, String country, Integer yearOfFunding, String name, String language) {
+        this.id = id;
+        this.country = country;
+        this.yearOfFunding = yearOfFunding;
+        this.name = name;
+        this.language = language;
+    }
+
 }

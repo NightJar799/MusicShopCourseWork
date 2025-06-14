@@ -29,7 +29,31 @@ public class Participation {
                 ", instrument=" + instrument +
                 '}';
     }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public Personality getPersonality() {
+        return personality;
+    }
+
+    public Instrument getInstrument() {
+        return instrument;
+    }
+
+    public Participation(Group group, Personality personality, Instrument instrument) {
+        this.group = group;
+        this.personality = personality;
+        this.instrument = instrument;
+    }
+
+    public Participation() {
+
+    }
 }
+
+
 
 class ParticipationId implements java.io.Serializable {
     public Integer group;

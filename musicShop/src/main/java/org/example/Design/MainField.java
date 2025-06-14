@@ -14,7 +14,10 @@ import org.example.Hibernate.DbRequests;
 
 import java.util.*;
 
+import org.example.Hibernate.HibernateUtil;
 import org.example.Hibernate.QueryResult;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 public class MainField extends VBox {
     private TableView<Map<String, Object>> resultTable;
@@ -52,9 +55,54 @@ public class MainField extends VBox {
     public void loadFieldsForQuery(Integer numberOfQuery) {
         inputFields.getChildren().clear();
         switch (numberOfQuery) {
-            case 0:
-                addInputField("parameter: 1", "param1");
-                addInputField("parameter 2", "param2");
+            case (0):
+                break;
+            case (1):
+                break;
+            case (2):
+                break;
+            case (3):
+                break;
+            case (4):
+                break;
+            case (5):
+                break;
+            case (6):
+                addInputField("Сокращённое имя лейбла", "labelShortname");
+                addInputField("Прозвище фронтмена", "personalityNickname");
+                break;
+            case (7):
+                addInputField("Жанр", "genre");
+                addInputField("Название инструмента", "instrumentName");
+                break;
+            case (8):
+                addInputField("Название инструмента", "instrumentNames");
+                addInputField("Сокращённое имя лейбла", "labelShortName");
+                break;
+            case (9):
+                addInputField("Название группы", "groupName");
+                addInputField("Сокращённое имя лейбла", "labelShortName");
+                break;
+            case (10):
+                addInputField("EAN альбома", "ean");
+                addInputField("Сокращённое имя лейбла", "labelShortName");
+                break;
+            case (11):
+                addInputField("Прозвище", "nickname");
+                addInputField("Id группы", "groupId");
+                addInputField("Id инструмента", "instrumentId");
+                break;
+            case (12):
+                addInputField("Прозвище", "nickname");
+                break;
+            case (13):
+                addInputField("Сокращённое имя лейбла", "labelShortName");
+                break;
+//            case (13):
+//                return insertNewAlbumWithCompositions(HibernateUtil.getSessionFactory(),inputs);
+//            case (14):
+//                return insertNewPersonalityAndParticipation(HibernateUtil.getSessionFactory(),inputs);
+            default:
                 break;
         }
 
@@ -74,7 +122,7 @@ public class MainField extends VBox {
 
     private void executeQuery(int queryNumber) {
         Map<String, String> inputs = collectInputData();
-        QueryResult queryResult = DbRequests.executeQuery(queryNumber);
+        QueryResult queryResult = DbRequests.executeQuery(queryNumber,inputs);
 
         resultTable.getColumns().clear();
 
@@ -109,7 +157,7 @@ public class MainField extends VBox {
                                 TableColumn<Map<String, Object>, Object> column =
                                         new TableColumn<>(dbColumnName);  // Use original name
                                 column.setCellValueFactory(new MapValueFactory(dbColumnName));
-                                column.setPrefWidth(150);  // Default width
+                                column.setPrefWidth(50);  // Default width
                                 resultTable.getColumns().add(column);
                             });
                 }else {
@@ -138,52 +186,97 @@ public class MainField extends VBox {
 
             // Create columns for before/after comparison
             if (!queryResult.getBeforeState().isEmpty()) {
+                Map<String, Object> firstBeforeRow = queryResult.getBeforeState().get(0);
+                Map<String, QueryColumnConfig> config = queryConfigs.get(queryNumber);
                 // Add before state columns
                 TableColumn<Map<String, Object>, Object> beforeCol = new TableColumn<>("Before");
                 resultTable.getColumns().add(beforeCol);
 
-                Map<String, Object> firstBeforeRow = queryResult.getBeforeState().get(0);
-                for (String columnName : firstBeforeRow.keySet()) {
-                    TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
-                    column.setCellValueFactory(new MapValueFactory(columnName));
-                    beforeCol.getColumns().add(column);
+                if (config != null) {
+                    // Create before columns according to configuration
+                    config.entrySet().stream()
+                            .sorted(Comparator.comparingInt(e -> e.getValue().getOrder()))
+                            .forEach(entry -> {
+                                String dbColumnName = entry.getKey();
+                                if (firstBeforeRow.containsKey(dbColumnName)) {
+                                    QueryColumnConfig columnConfig = entry.getValue();
+                                    TableColumn<Map<String, Object>, Object> column =
+                                            new TableColumn<>(columnConfig.getDisplayName());
+                                    column.setCellValueFactory(new MapValueFactory("before_" + dbColumnName));
+                                    column.setPrefWidth(columnConfig.getWidth());
+                                    beforeCol.getColumns().add(column);
+                                }
+                            });
+
+                    // Add remaining columns
+                    firstBeforeRow.keySet().stream()
+                            .filter(dbColumnName -> !config.containsKey(dbColumnName))
+                            .forEach(dbColumnName -> {
+                                TableColumn<Map<String, Object>, Object> column =
+                                        new TableColumn<>(dbColumnName);
+                                column.setCellValueFactory(new MapValueFactory("before_" + dbColumnName));
+                                column.setPrefWidth(150);
+                                beforeCol.getColumns().add(column);
+                            });
+                } else {
+                    // No configuration - default behavior
+                    for (String dbColumnName : firstBeforeRow.keySet()) {
+                        TableColumn<Map<String, Object>, Object> column =
+                                new TableColumn<>(dbColumnName);
+                        column.setCellValueFactory(new MapValueFactory("before_" + dbColumnName));
+                        column.setPrefWidth(150);
+                        beforeCol.getColumns().add(column);
+                    }
+                }
+
+                if (!queryResult.getAfterState().isEmpty()) {
+                    TableColumn<Map<String, Object>, Object> afterCol = new TableColumn<>("After");
+                    resultTable.getColumns().add(afterCol);
+
+                    if (config != null) {
+                        // Create before columns according to configuration
+                        config.entrySet().stream()
+                                .sorted(Comparator.comparingInt(e -> e.getValue().getOrder()))
+                                .forEach(entry -> {
+                                    String dbColumnName = entry.getKey();
+                                    if (firstBeforeRow.containsKey(dbColumnName)) {
+                                        QueryColumnConfig columnConfig = entry.getValue();
+                                        TableColumn<Map<String, Object>, Object> column =
+                                                new TableColumn<>(columnConfig.getDisplayName());
+                                        column.setCellValueFactory(new MapValueFactory("after_" + dbColumnName));
+                                        column.setPrefWidth(columnConfig.getWidth());
+                                        beforeCol.getColumns().add(column);
+                                    }
+                                });
+
+                        // Add remaining columns
+                        firstBeforeRow.keySet().stream()
+                                .filter(dbColumnName -> !config.containsKey(dbColumnName))
+                                .forEach(dbColumnName -> {
+                                    TableColumn<Map<String, Object>, Object> column =
+                                            new TableColumn<>(dbColumnName);
+                                    column.setCellValueFactory(new MapValueFactory("after_" + dbColumnName));
+                                    column.setPrefWidth(150);
+                                    beforeCol.getColumns().add(column);
+                                });
+                    } else {
+                        // No configuration - default behavior
+                        for (String dbColumnName : firstBeforeRow.keySet()) {
+                            TableColumn<Map<String, Object>, Object> column =
+                                    new TableColumn<>(dbColumnName);
+                            column.setCellValueFactory(new MapValueFactory("after_" + dbColumnName));
+                            column.setPrefWidth(150);
+                            beforeCol.getColumns().add(column);
+                        }
+                    }
+
+                    // ... repeat the same logic for after columns ...
                 }
 
                 // Add after state columns
-                TableColumn<Map<String, Object>, Object> afterCol = new TableColumn<>("After");
-                resultTable.getColumns().add(afterCol);
-
-                if (!queryResult.getAfterState().isEmpty()) {
-                    Map<String, Object> firstAfterRow = queryResult.getAfterState().get(0);
-                    for (String columnName : firstAfterRow.keySet()) {
-                        TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
-                        column.setCellValueFactory(new MapValueFactory(columnName));
-                        afterCol.getColumns().add(column);
-                    }
-                }
 
                 // Combine before and after states for display
                 ObservableList<Map<String, Object>> combinedItems = FXCollections.observableArrayList();
-                int maxRows = Math.max(queryResult.getBeforeState().size(), queryResult.getAfterState().size());
-
-                for (int i = 0; i < maxRows; i++) {
-                    Map<String, Object> combinedRow = new HashMap<>();
-
-                    // Add before state values
-                    if (i < queryResult.getBeforeState().size()) {
-                        Map<String, Object> beforeRow = queryResult.getBeforeState().get(i);
-                        beforeRow.forEach((k, v) -> combinedRow.put("before_" + k, v));
-                    }
-
-                    // Add after state values
-                    if (i < queryResult.getAfterState().size()) {
-                        Map<String, Object> afterRow = queryResult.getAfterState().get(i);
-                        afterRow.forEach((k, v) -> combinedRow.put("after_" + k, v));
-                    }
-
-                    combinedItems.add(combinedRow);
-                }
-
                 resultTable.setItems(combinedItems);
             }
         }

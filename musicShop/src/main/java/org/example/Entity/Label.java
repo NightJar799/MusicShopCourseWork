@@ -38,9 +38,9 @@ public class Label{
                 '}';
     }
 
-//    public Label(){
-//
-//    }
+    public Label(){
+
+    }
 
     public Label(Integer id,Integer yearOfFunding, String legalAddress, String legalName, String shortName, String country){
         this.id = id;

@@ -1,6 +1,5 @@
 package org.example.Hibernate;
 
-import javafx.scene.Group;
 import org.example.Entity.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -32,9 +31,19 @@ public class HibernateUtil {
 
             // Create MetadataSources and add all entity classes
             MetadataSources sources = new MetadataSources(registry)
-                    .addPackage("org.example.Entity");
+                    .addPackage("org.example.Entity")
+                    .addAnnotatedClass(Label.class)
+                    .addAnnotatedClass(Composition.class)
+                    .addAnnotatedClass(Group.class)
+                    .addAnnotatedClass(Instrument.class)
+                    .addAnnotatedClass(Participation.class)
+                    .addAnnotatedClass(Personality.class)
+                    .addAnnotatedClass(Album.class);
 
             Metadata metadata = sources.getMetadataBuilder().build();
+
+
+            System.out.println("\n\n\n\n\nRegistered entities: " + metadata.getEntityBindings());
 
             return metadata.getSessionFactoryBuilder().build();
 
