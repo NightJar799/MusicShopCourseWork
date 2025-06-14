@@ -22,16 +22,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage){
-//        Label label1 = new Label("Label1");
-//        Label label2 = new Label("Label2");
-//        Label label3 = new Label("Label3");
-//        Label label4 = new Label("Label4");
-//        Label label5 = new Label("Label5");
-//        Label label6 = new Label("Label6");
-//        Label label7 = new Label("Label7");
-//
-//        VBox root = new VBox(10, label1, label2, label3, label4, label5, label6, label7);
-
         BorderPane root = new BorderPane();
 
         SideField sidefield = new SideField("param","param1");
@@ -44,26 +34,9 @@ public class Main extends Application{
 
         Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
+        stage.setTitle("MusicShop");
+        stage.setFullScreen(true);
 
         stage.show();
         }
-
-//        SideField root = new SideField("query","query1","query2");
-//        Scene scene = new Scene(root, 300, 150);
-//        stage.setScene(scene);
-//
-//        stage.setTitle("VBox in JavaFX");
-//
-//        stage.show();
-//    }
-//        var factory = new Configuration()
-//                .addAnnotatedClass(LabelMS.class)
-//                .addAnnotatedClass(Album.class)
-//                .addAnnotatedClass(Composition.class)
-//                .addAnnotatedClass(Group.class)
-//                .addAnnotatedClass(Participation.class)
-//                .addAnnotatedClass(Instrument.class)
-//                .addAnnotatedClass(Personality.class)
-//                .buildSessionFactory();
-//    }
 }

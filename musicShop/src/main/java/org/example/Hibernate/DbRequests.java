@@ -8,25 +8,43 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 import org.example.Hibernate.HibernateUtil;
 
 public class DbRequests {
 
-    public static String executeQuery(int numberOfQuery){
+    public static QueryResult executeQuery(int numberOfQuery){
         switch(numberOfQuery) {
             case(0):
                 return getAllLabels(HibernateUtil.getSessionFactory());
             default:
-                return "Unknown query";
+                return new QueryResult(true, Collections.emptyList());
         }
     }
 
-    private static String getAllLabels(SessionFactory factory) {
+    private static QueryResult getAllLabels(SessionFactory factory) {
         try (Session session = factory.openSession()) {
-            List<?> out = session.createNativeQuery("SELECT * FROM shop.labels", Label.class).getResultList();
-            return out.toString();
+            List<Label> labels = session.createNativeQuery("SELECT * FROM shop.labels", Label.class).getResultList();
+            List<Map<String, Object>> resultList = new ArrayList<>();
+
+            for (Label label : labels) {
+                Map<String, Object> row = new HashMap<>();
+                // Assuming Label class has getId(), getName(), etc. methods
+                // Add all properties you want to display in the table
+                row.put("id", label.getId());
+                row.put("shortname", label.getShortName());
+                row.put("legal name", label.getLegalName());
+                row.put("legal Address", label.getLegalAddress());
+                row.put("year of Funding", label.getYearOfFunding());
+                row.put("country", label.getCountry());
+                // Add other properties as needed...
+
+                resultList.add(row);
+            }
+
+            // Return as a SELECT query result
+            return new QueryResult(true, resultList);
         }
     }
 
