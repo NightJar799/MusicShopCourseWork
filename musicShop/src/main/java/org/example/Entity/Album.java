@@ -31,15 +31,7 @@ public class Album {
 
     @Override
     public String toString() {
-        return "Album{" +
-                "ean=" + ean +
-                ", label=" + label +
-                ", cost=" + cost +
-                ", dateOfRelease=" + dateOfRelease +
-                ", typeOfPackage='" + typeOfPackage + '\'' +
-                ", typeOfPublication='" + typeOfPublication + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return String.valueOf(ean);
     }
 
     public Long getEan() {

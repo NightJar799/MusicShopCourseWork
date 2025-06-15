@@ -36,17 +36,7 @@ public class Personality {
 
     @Override
     public String toString() {
-        return "Personality{" +
-                "id=" + id +
-                ", language='" + language + '\'' +
-                ", country='" + country + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", thirdName='" + thirdName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", nickname='" + nickname + '\'' +
-                ", frontman=" + frontman +
-                '}';
+        return String.valueOf(id);
     }
 
     public Long getId() {

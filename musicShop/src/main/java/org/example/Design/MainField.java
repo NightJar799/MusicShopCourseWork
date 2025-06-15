@@ -68,39 +68,41 @@ public class MainField extends VBox {
             case (5):
                 break;
             case (6):
+                break;
+            case (7):
                 addInputField("Сокращённое имя лейбла", "labelShortname");
                 addInputField("Прозвище фронтмена", "personalityNickname");
                 break;
-            case (7):
+            case (8):
                 addInputField("Жанр", "genre");
                 addInputField("Название инструмента", "instrumentName");
                 break;
-            case (8):
+            case (9):
                 addInputField("Название инструмента", "instrumentNames");
                 addInputField("Сокращённое имя лейбла", "labelShortName");
                 break;
-            case (9):
+            case (10):
                 addInputField("Название группы", "groupName");
                 addInputField("Сокращённое имя лейбла", "labelShortName");
                 break;
-            case (10):
+            case (11):
                 addInputField("EAN альбома", "ean");
                 addInputField("Сокращённое имя лейбла", "labelShortName");
                 break;
-            case (11):
+            case (12):
                 addInputField("Прозвище", "nickname");
                 addInputField("Id группы", "groupId");
                 addInputField("Id инструмента", "instrumentId");
                 break;
-            case (12):
+            case (13):
                 addInputField("Прозвище", "nickname");
                 break;
-            case (13):
+            case (14):
                 addInputField("Сокращённое имя лейбла", "labelShortName");
                 break;
-//            case (13):
+//            case (15):
 //                return insertNewAlbumWithCompositions(HibernateUtil.getSessionFactory(),inputs);
-//            case (14):
+//            case (16):
 //                return insertNewPersonalityAndParticipation(HibernateUtil.getSessionFactory(),inputs);
             default:
                 break;

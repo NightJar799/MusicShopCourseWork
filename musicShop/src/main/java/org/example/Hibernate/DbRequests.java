@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -213,7 +214,7 @@ public class DbRequests {
                     "AND pe.nickname = :nickname " +
                     "AND pe.frontman = true";
 
-            Double minCost = (Double) session.createNativeQuery(query)
+            Integer minCost = (Integer) session.createNativeQuery(query)
                     .setParameter("labelShortName", inputs.get("labelShortname"))
                     .setParameter("nickname", inputs.get("personalityNickname"))
                     .uniqueResult();
@@ -236,7 +237,7 @@ public class DbRequests {
                     "JOIN shop.instruments i ON p.id_of_instrument = i.id " +
                     "WHERE c.genre = :genre AND i.name = :instrumentName";
 
-            Double avgCost = (Double) session.createNativeQuery(query)
+            BigDecimal avgCost = (BigDecimal) session.createNativeQuery(query)
                     .setParameter("genre", inputs.get("genre"))
                     .setParameter("instrumentName", inputs.get("instrumentName"))
                     .uniqueResult();
@@ -320,7 +321,7 @@ public class DbRequests {
 
             String query = "UPDATE shop.albums " +
                     "SET id_of_label = (SELECT id FROM shop.labels WHERE short_name = :labelShortName) " +
-                    "WHERE ean = :ean";
+                    "WHERE ean = CAST(:ean as BIGINT)";
 
             int updated = session.createNativeQuery(query)
                     .setParameter("labelShortName", inputs.get("labelShortName"))

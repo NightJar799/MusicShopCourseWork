@@ -21,12 +21,7 @@ public class Instrument {
 
     @Override
     public String toString() {
-        return "Instrument{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", modelName='" + modelName + '\'' +
-                '}';
+        return String.valueOf(id);
     }
 
     public Long getId() {

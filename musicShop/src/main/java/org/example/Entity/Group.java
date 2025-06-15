@@ -24,13 +24,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", country='" + country + '\'' +
-                ", yearOfFunding=" + yearOfFunding +
-                ", name='" + name + '\'' +
-                ", language='" + language + '\'' +
-                '}';
+        return String.valueOf(id);
     }
 
     public Integer getId() {

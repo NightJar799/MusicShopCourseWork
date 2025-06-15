@@ -1,9 +1,13 @@
 package org.example.Entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JavaType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.descriptor.java.DurationJavaType;
 
-import java.time.*;
+import java.time.Duration;
 
 @Entity
 @Table(name = "compositions", schema = "shop")
@@ -13,18 +17,19 @@ public class Composition {
     @Column(name = "id", insertable = false)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ean_of_album", nullable = false)
     public Album album;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_of_group", nullable = false)
     public Group group;
 
     @Column(name = "name", nullable = false)
     public String name;
 
-    @Column(name = "duration", nullable = false)
+    @Column(name = "duration", nullable = false, columnDefinition = "interval")
+    @JdbcTypeCode(SqlTypes.INTERVAL_SECOND)
     public Duration duration;
 
     @Column(name = "genre", nullable = false)
