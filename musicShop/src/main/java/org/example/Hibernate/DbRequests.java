@@ -319,21 +319,53 @@ public class DbRequests {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
 
+            //getAllAlbums(factory);
+
+            List<Album> albumsBefore = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> beforeList = new ArrayList<>();
+
+            for (Album album : albumsBefore) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                beforeList.add(row);
+            }
+
             String query = "UPDATE shop.albums " +
                     "SET id_of_label = (SELECT id FROM shop.labels WHERE short_name = :labelShortName) " +
                     "WHERE ean = CAST(:ean as BIGINT)";
 
-            int updated = session.createNativeQuery(query)
+            session.createNativeQuery(query)
                     .setParameter("labelShortName", inputs.get("labelShortName"))
                     .setParameter("ean", inputs.get("ean"))
                     .executeUpdate();
 
+            List<Album> albumsAfter = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> afterList = new ArrayList<>();
+
+            for (Album album : albumsAfter) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                afterList.add(row);
+            }
+
             session.getTransaction().commit();
 
-            Map<String, Object> result = new HashMap<>();
-            result.put("updated_rows", updated);
+//            Map<String, Object> result = new HashMap<>();
+//            result.put("updated_rows", updated);
 
-            return new QueryResult(true, Collections.singletonList(result));
+            return new QueryResult(false, beforeList, afterList);
         }
     }
 
@@ -342,22 +374,41 @@ public class DbRequests {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
 
+            List<Participation> participationsBefore = session.createNativeQuery("SELECT * FROM shop.participations", Participation.class).getResultList();
+            List<Map<String, Object>> resultListBefore = new ArrayList<>();
+
+            for (Participation participation : participationsBefore) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id_of_group", participation.getGroup());
+                row.put("id_of_personality", participation.getPersonality());
+                row.put("id_of_instrument", participation.getInstrument());
+                resultListBefore.add(row);
+            }
+
             String query = "UPDATE shop.participations " +
                     "SET id_of_personality = (SELECT id FROM shop.personalities WHERE nickname = :nickname) " +
-                    "WHERE id_of_group = :groupId AND id_of_instrument = :instrumentId";
+                    "WHERE id_of_group = CAST(:groupId AS INT) AND id_of_instrument = CAST(:instrumentId AS BIGINT)";
 
-            int updated = session.createNativeQuery(query)
+            session.createNativeQuery(query)
                     .setParameter("nickname", inputs.get("nickname"))
                     .setParameter("groupId", inputs.get("groupId"))
                     .setParameter("instrumentId", inputs.get("instrumentId"))
                     .executeUpdate();
 
+            List<Participation> participationsAfter = session.createNativeQuery("SELECT * FROM shop.participations", Participation.class).getResultList();
+            List<Map<String, Object>> resultListAfter = new ArrayList<>();
+
+            for (Participation participation : participationsAfter) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("id_of_group", participation.getGroup());
+                row.put("id_of_personality", participation.getPersonality());
+                row.put("id_of_instrument", participation.getInstrument());
+                resultListAfter.add(row);
+            }
+
             session.getTransaction().commit();
 
-            Map<String, Object> result = new HashMap<>();
-            result.put("updated_rows", updated);
-
-            return new QueryResult(true, Collections.singletonList(result));
+            return new QueryResult(false, resultListBefore, resultListAfter);
         }
     }
 
@@ -366,19 +417,46 @@ public class DbRequests {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
 
+            List<Album> albumsBefore = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> beforeList = new ArrayList<>();
+
+            for (Album album : albumsBefore) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                beforeList.add(row);
+            }
+
             String query = "DELETE FROM shop.albums " +
                     "WHERE id_of_label = (SELECT id FROM shop.labels WHERE short_name = :labelShortName)";
 
-            int deleted = session.createNativeQuery(query)
+            session.createNativeQuery(query)
                     .setParameter("labelShortName", inputs.get("labelShortName"))
                     .executeUpdate();
 
+            List<Album> albumsAfter = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> afterList = new ArrayList<>();
+
+            for (Album album : albumsAfter) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                afterList.add(row);
+            }
+
             session.getTransaction().commit();
 
-            Map<String, Object> result = new HashMap<>();
-            result.put("deleted_rows", deleted);
-
-            return new QueryResult(true, Collections.singletonList(result));
+            return new QueryResult(false, beforeList, afterList);
         }
     }
 
@@ -386,6 +464,21 @@ public class DbRequests {
     public static QueryResult deleteAlbumsWithCompositionsByPersonality(SessionFactory factory, Map<String, String> inputs) {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
+
+            List<Album> albumsBefore = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> beforeList = new ArrayList<>();
+
+            for (Album album : albumsBefore) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                beforeList.add(row);
+            }
 
             String query = "DELETE FROM shop.albums " +
                     "WHERE ean IN (SELECT DISTINCT c.ean_of_album " +
@@ -395,16 +488,28 @@ public class DbRequests {
                     "JOIN shop.personalities pe ON p.id_of_personality = pe.id " +
                     "WHERE pe.nickname = :nickname)";
 
-            int deleted = session.createNativeQuery(query)
+            session.createNativeQuery(query)
                     .setParameter("nickname", inputs.get("nickname"))
                     .executeUpdate();
 
+            List<Album> albumsAfter = session.createQuery("FROM Album", Album.class).getResultList();
+            List<Map<String, Object>> afterList = new ArrayList<>();
+
+            for (Album album : albumsAfter) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("ean", album.getEan());
+                row.put("id_of_label", album.getLabel().getId()); // Get the ID from the Label object
+                row.put("cost", album.getCost());
+                row.put("date_of_relise", album.getDateOfRelease());
+                row.put("type_of_package", album.getTypeOfPackage());
+                row.put("type_of_publication", album.getTypeOfPublication());
+                row.put("name", album.getName());
+                afterList.add(row);
+            }
+
             session.getTransaction().commit();
 
-            Map<String, Object> result = new HashMap<>();
-            result.put("deleted_rows", deleted);
-
-            return new QueryResult(true, Collections.singletonList(result));
+            return new QueryResult(false, beforeList, afterList);
         }
     }
 
