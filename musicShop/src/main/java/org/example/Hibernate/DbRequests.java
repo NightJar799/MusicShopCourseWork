@@ -555,50 +555,6 @@ public class DbRequests {
         }
     }
 
-            public static class PersonalityDTO {
-                private String language;
-                private String country;
-                private String firstname;
-                private String secondname;
-                private String thirdname;
-                private Date dateOfBirth;
-                private String nickname;
-                private boolean frontman;
-
-                public String getLanguage() {
-                    return language;
-                }
-
-                public String getCountry() {
-                    return country;
-                }
-
-                public String getFirstname() {
-                    return firstname;
-                }
-
-                public String getSecondname() {
-                    return secondname;
-                }
-
-                public String getThirdname() {
-                    return thirdname;
-                }
-
-                public Date getDateOfBirth() {
-                    return dateOfBirth;
-                }
-
-                public String getNickname() {
-                    return nickname;
-                }
-
-                public boolean isFrontman() {
-                    return frontman;
-                }
-
-    }
-
     public static class ParticipationDTO {
         private String nameOfGroup;
         private String nameOfInstrument;
