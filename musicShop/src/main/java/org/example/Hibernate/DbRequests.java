@@ -95,7 +95,7 @@ public class DbRequests {
                     return "Короткое имя лейбла должно содержать только буквы и цифры";
                 } else if (!inputs.get(Constants.LABELSHORTNAME).substring(0,1).matches("[A-Z]+")) {
                     return "Короткое имя лейбла начинается с заглавной буквы";
-                } if (!inputs.get(Constants.GROUPNAME).matches("[a-zA-Z0-9]+")) {
+                } else if (!inputs.get(Constants.GROUPNAME).matches("[a-zA-Z0-9]+")) {
                     return "Название группы должно содержать только буквы и цифры";
                 } else if (!inputs.get(Constants.GROUPNAME).substring(0,1).matches("[A-Z]+")) {
                     return "Название группы начинается с заглавной буквы";
@@ -112,7 +112,7 @@ public class DbRequests {
                     return "Короткое имя лейбла начинается с заглавной буквы";
                 } else if (inputs.get(Constants.LABELSHORTNAME).length() > 150) {
                     return "Длина названия лейбла должна быть не более 150 букв";
-                } else if (inputs.get(Constants.EAN).matches("[0-9]+")) {
+                } else if (!inputs.get(Constants.EAN).matches("[0-9]+")) {
                     return "EAN должен состоять только из цифр";
                 } else if (inputs.get(Constants.EAN).length() != 13) {
                     return "EAN по своему стандарту всегда имеет только 13 цифр";
