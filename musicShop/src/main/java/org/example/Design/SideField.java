@@ -21,6 +21,8 @@ public class SideField extends VBox {
 
         Button btn = new Button(labelOfBtn);
 
+        btn.setMaxWidth(200.);
+
         btn.setOnAction(e -> listOfQueries.loadFieldsForQuery(numOfQuery));
 
         getChildren().add(btn);

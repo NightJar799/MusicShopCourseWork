@@ -12,7 +12,6 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
-            // Create registry with your database configuration
             StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                     .applySetting("hibernate.connection.driver_class", "org.postgresql.Driver")
                     .applySetting("hibernate.connection.url", "jdbc:postgresql://localhost:30432/musicshop")
@@ -29,7 +28,6 @@ public class HibernateUtil {
                     .applySetting("logging.level.org.hibernate.SQL", "DEBUG")
                     .build();
 
-            // Create MetadataSources and add all entity classes
             MetadataSources sources = new MetadataSources(registry)
                     .addPackage("org.example.Entity")
                     .addAnnotatedClass(Label.class)
@@ -41,9 +39,6 @@ public class HibernateUtil {
                     .addAnnotatedClass(Album.class);
 
             Metadata metadata = sources.getMetadataBuilder().build();
-
-
-            System.out.println("\n\n\n\n\nRegistered entities: " + metadata.getEntityBindings());
 
             return metadata.getSessionFactoryBuilder().build();
 
