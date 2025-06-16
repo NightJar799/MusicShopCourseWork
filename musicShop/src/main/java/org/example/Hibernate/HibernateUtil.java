@@ -14,7 +14,7 @@ public class HibernateUtil {
         try {
             StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                     .applySetting("hibernate.connection.driver_class", "org.postgresql.Driver")
-                    .applySetting("hibernate.connection.url", "jdbc:postgresql://localhost:30432/musicshop")
+                    .applySetting("hibernate.connection.url", "jdbc:postgresql://localhost:5432/musicshop")
                     .applySetting("hibernate.connection.username", "postgres")
                     .applySetting("hibernate.connection.password", "postgres")
                     .applySetting("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
@@ -50,11 +50,5 @@ public class HibernateUtil {
 
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
-    }
-
-    public static void shutdown() {
-        if (sessionFactory != null) {
-            sessionFactory.close();
-        }
     }
 }

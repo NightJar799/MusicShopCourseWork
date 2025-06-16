@@ -40,7 +40,7 @@ public class MainField extends VBox {
         resultTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
         resultTableForNonSel.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        nameOfQuery = new Label("Выберете запрос");
+        nameOfQuery = new Label("Выберите запрос");
         resultLabel = new Label("Results:");
         resultLabelForNonSel = new Label("After Change:");
 
@@ -97,8 +97,8 @@ public class MainField extends VBox {
             case (11):
                 nameOfQuery.setText("Обновить участника группы");
                 addInputField("Прозвище", Constants.NICKNAME);
-                addInputField("Id группы", Constants.GROUPNAME);
-                addInputField("Id инструмента", Constants.INSTRUMENTNAME);
+                addInputField("Название группы", Constants.GROUPNAME);
+                addInputField("Название инструмента", Constants.INSTRUMENTNAME);
                 break;
             case (12):
                 nameOfQuery.setText("Удалить альбомы определённой личности");

@@ -115,7 +115,7 @@ public class DbRequests {
                 } else if (!inputs.get(Constants.EAN).matches("[0-9]+")) {
                     return "EAN должен состоять только из цифр";
                 } else if (inputs.get(Constants.EAN).length() != 13) {
-                    return "EAN по своему стандарту всегда имеет только 13 цифр";
+                    return "EAN по своему стандарту всегда имеет 13 цифр. У вас " + inputs.get(Constants.EAN).length();
                 }
                 break;
             case 12:
